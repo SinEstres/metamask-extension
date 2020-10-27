@@ -50,8 +50,7 @@ export default class GasModalPageContainer extends Component {
     customGasLimitMessage: PropTypes.string,
     customTotalSupplement: PropTypes.string,
     isSwap: PropTypes.bool,
-    value: PropTypes.string,
-    conversionRate: PropTypes.number,
+    usdConversionRate: PropTypes.number,
     minimumGasLimit: PropTypes.number.isRequired,
   }
 
@@ -269,15 +268,11 @@ export default class GasModalPageContainer extends Component {
                 properties: {
                   speed_set: speedSet,
                   gas_mode: this.state.selectedTab,
-                  gas_fees: sumHexWEIsToRenderableFiat(
-                    [
-                      this.props.value,
-                      newSwapGasTotal,
-                      this.props.customTotalSupplement,
-                    ],
+                  gas_fees: sumHexWEIsToUnformattedFiat(
+                    [newSwapGasTotal, this.props.customTotalSupplement],
                     'usd',
-                    this.props.conversionRate,
-                  )?.slice(1),
+                    this.props.usdConversionRate,
+                  ),
                 },
               })
             }

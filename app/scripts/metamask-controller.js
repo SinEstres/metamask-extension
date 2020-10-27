@@ -153,10 +153,14 @@ export default class MetamaskController extends EventEmitter {
       preferencesStore: this.preferencesController.store,
     })
 
+<<<<<<< HEAD
     this.currencyRateController = new CurrencyRateController(
       undefined,
       initState.CurrencyController,
     )
+=======
+    this.currencyRateController = new CurrencyRateController({ includeUSDRate: true }, initState.CurrencyController)
+>>>>>>> Fix gas_fees properties collected for swaps analytics events
 
     this.phishingController = new PhishingController()
 

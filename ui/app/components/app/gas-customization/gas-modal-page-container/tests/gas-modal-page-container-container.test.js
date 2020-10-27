@@ -78,6 +78,7 @@ describe('gas-modal-page-container container', function () {
           },
           currentCurrency: 'abc',
           conversionRate: 50,
+          usdConversionRate: 123,
           preferences: {
             showFiatInTestnets: false,
           },
@@ -173,7 +174,7 @@ describe('gas-modal-page-container container', function () {
         transaction: {
           id: 34,
         },
-        value: '0x640000000000000',
+        usdConversionRate: 123,
         minimumGasLimit: 21000,
       }
       const baseMockOwnProps = { transaction: { id: 34 } }
