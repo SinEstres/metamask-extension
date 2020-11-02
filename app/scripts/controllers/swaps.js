@@ -531,28 +531,35 @@ export default class SwapsController {
         destinationTokenInfo.decimals,
       )
 
-      const tokenValueOfQuoteForSorting =
-        destinationToken === ETH_SWAPS_TOKEN_ADDRESS
-          ? decimalAdjustedDestinationAmount.minus(totalEthCost, 10)
-          : new BigNumber(tokenConversionRate || 1, 10)
-              .times(decimalAdjustedDestinationAmount)
-              .minus(tokenConversionRate ? totalEthCost : 0, 10)
-
-      const ethValueOfQuote =
-        destinationToken === ETH_SWAPS_TOKEN_ADDRESS
-          ? decimalAdjustedDestinationAmount.minus(totalEthCost, 10)
-          : new BigNumber(tokenConversionRate || 0, 10)
-              .times(decimalAdjustedDestinationAmount)
-              .minus(tokenConversionRate ? totalEthCost : 0, 10)
-
       const metaMaskFeePercentage = new BigNumber(metaMaskFee, 10).div(100)
       const metaMaskFeeInTokens = decimalAdjustedDestinationAmount.times(
         metaMaskFeePercentage,
       )
-      const metaMaskFeeInEth =
-        destinationToken === ETH_SWAPS_TOKEN_ADDRESS
-          ? metaMaskFeeInTokens
-          : metaMaskFeeInTokens.times(tokenConversionRate || 0)
+
+      let tokenValueOfQuoteForSorting
+      let ethValueOfQuote
+      let metaMaskFeeInEth
+      if (destinationToken === ETH_SWAPS_TOKEN_ADDRESS) {
+        tokenValueOfQuoteForSorting = decimalAdjustedDestinationAmount.minus(
+          totalEthCost,
+          10,
+        )
+        ethValueOfQuote = tokenValueOfQuoteForSorting
+        metaMaskFeeInEth = metaMaskFeeInTokens
+      } else if (tokenConversionRate === undefined) {
+        tokenValueOfQuoteForSorting = decimalAdjustedDestinationAmount.minus(
+          totalEthCost,
+          10,
+        )
+        ethValueOfQuote = undefined
+        metaMaskFeeInEth = undefined
+      } else {
+        tokenValueOfQuoteForSorting = decimalAdjustedDestinationAmount
+          .times(tokenConversionRate, 10)
+          .minus(totalEthCost)
+        ethValueOfQuote = tokenValueOfQuoteForSorting
+        metaMaskFeeInEth = metaMaskFeeInTokens.times(tokenConversionRate)
+      }
 
       quote.ethValueOfQuote = ethValueOfQuote
       quote.ethFee = ethFee
