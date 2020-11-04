@@ -524,9 +524,6 @@ export default class SwapsController {
             )
           : totalEthCost
 
-      const tokenConversionRate = tokenConversionRates[destinationToken]
-      const toEthConversionRate = tokenConversionRate || 1
-
       const decimalAdjustedDestinationAmount = calcTokenAmount(
         destinationAmount,
         destinationTokenInfo.decimals,
@@ -535,30 +532,42 @@ export default class SwapsController {
       const tokenPercentageOfPreFeeDestAmount = new BigNumber(100, 10)
         .minus(metaMaskFee, 10)
         .div(100)
-      const destinationAmountBeforeMetaMaskFee = decimalAdjustedDestinationAmount
-        .div(tokenPercentageOfPreFeeDestAmount)
-      const metaMaskFeeInTokens = destinationAmountBeforeMetaMaskFee
-        .minus(decimalAdjustedDestinationAmount)
+      const destinationAmountBeforeMetaMaskFee = decimalAdjustedDestinationAmount.div(
+        tokenPercentageOfPreFeeDestAmount,
+      )
+      const metaMaskFeeInTokens = destinationAmountBeforeMetaMaskFee.minus(
+        decimalAdjustedDestinationAmount,
+      )
+
+      const tokenConversionRate = tokenConversionRates[destinationToken]
+      const conversionRateForSorting = tokenConversionRate || 1
 
       const ethValueOfTokens = decimalAdjustedDestinationAmount.times(
-        toEthConversionRate,
-        10,
-      )
-      const overallValueOfQuoteForSorting = ethValueOfTokens.minus(
-        totalEthCost,
+        conversionRateForSorting,
         10,
       )
 
+      const conversionRateForCalculations =
+        sourceToken === ETH_SWAPS_TOKEN_ADDRESS ? 1 : tokenConversionRate
+
+      const overallValueOfQuoteForSorting =
+        conversionRateForCalculations === undefined
+          ? ethValueOfTokens
+          : ethValueOfTokens.minus(totalEthCost, 10)
+
       quote.ethFee = ethFee
-      quote.ethValueOfTokens = tokenConversionRate
-        ? ethValueOfTokens
-        : undefined
-      quote.overallValueOfQuote = tokenConversionRate
-        ? overallValueOfQuoteForSorting
-        : undefined
-      quote.metaMaskFeeInEth = tokenConversionRate
-        ? metaMaskFeeInTokens.times(toEthConversionRate)
-        : undefined
+      quote.ethValueOfTokens =
+        conversionRateForCalculations === undefined
+          ? undefined
+          : ethValueOfTokens
+      quote.overallValueOfQuote =
+        conversionRateForCalculations === undefined
+          ? undefined
+          : overallValueOfQuoteForSorting
+      quote.metaMaskFeeInEth =
+        conversionRateForCalculations === undefined
+          ? undefined
+          : metaMaskFeeInTokens.times(conversionRateForCalculations)
 
       if (
         overallValueOfBestQuoteForSorting === null ||
