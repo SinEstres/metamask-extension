@@ -535,8 +535,9 @@ export default class SwapsController {
       const tokenPercentageOfPreFeeDestAmount = new BigNumber(100, 10)
         .minus(metaMaskFee, 10)
         .div(100)
-      const metaMaskFeeInTokens = decimalAdjustedDestinationAmount
+      const destinationAmountBeforeMetaMaskFee = decimalAdjustedDestinationAmount
         .div(tokenPercentageOfPreFeeDestAmount)
+      const metaMaskFeeInTokens = destinationAmountBeforeMetaMaskFee
         .minus(decimalAdjustedDestinationAmount)
 
       const ethValueOfTokens = decimalAdjustedDestinationAmount.times(
