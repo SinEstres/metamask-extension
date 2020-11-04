@@ -200,9 +200,12 @@ export default class SwapsController {
     if (Object.values(newQuotes).length === 0) {
       this.setSwapsErrorKey(QUOTES_NOT_AVAILABLE_ERROR)
     } else {
-      [topAggId, newQuotes] = await this._findTopQuoteAndCalculateSavings(
-        newQuotes,
-      )
+      const [
+        _topAggId,
+        quotesWithSavingsAndFeeData,
+      ] = await this._findTopQuoteAndCalculateSavings(newQuotes)
+      topAggId = _topAggId
+      newQuotes = quotesWithSavingsAndFeeData
     }
 
     // If a newer call has been made, don't update state with old information
