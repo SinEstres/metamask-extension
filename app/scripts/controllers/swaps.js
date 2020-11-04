@@ -594,14 +594,10 @@ export default class SwapsController {
         metaMaskFeeInEth: medianMetaMaskFee,
       } = getMedianEthValueQuote(Object.values(quotes))
 
-      const ethValueOfMedianQuotePreMetaMaskFee = ethValueOfMedianQuote.plus(
-        medianMetaMaskFee,
-        10,
-      )
       // Total savings are calculated as:
-      //   (overall value of best trade) - (overall value of the median trade before fees are applied)
+      //   (overall value of best trade) - (overall value of the median trade)
       savings.total = ethValueOfBestQuote.minus(
-        ethValueOfMedianQuotePreMetaMaskFee,
+        ethValueOfMedianQuote,
         10,
       )
 
@@ -628,6 +624,7 @@ export default class SwapsController {
       savings.total = savings.total.toString(10)
       savings.fee = savings.fee.toString(10)
       savings.metaMaskFee = metaMaskFeeInEthForBestQuote.toString(10)
+      savings.medianMetaMaskFee = medianMetaMaskFee.toString(10)
 
       newQuotes[topAggId].isBestQuote = true
       newQuotes[topAggId].savings = savings
